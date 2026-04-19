@@ -11,6 +11,7 @@ class VariantModel:
     class_name: str
     base_class: str
     fields: list[FieldInfo]
+    properties: list[str]
 
 
 def generate_variants(model: ModelInfo) -> list[VariantModel]:
@@ -40,6 +41,7 @@ def _build_variant(model: ModelInfo, omitted: tuple[str, ...]) -> VariantModel:
         class_name=_variant_class_name(model.class_name, omitted),
         base_class=model.base_class,
         fields=new_fields,
+        properties=model.properties,
     )
 
 

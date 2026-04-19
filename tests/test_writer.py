@@ -64,3 +64,14 @@ def test_render_union():
     assert result.startswith("Date = (")
     assert "DateFull" in result
     assert "DateWithoutYear" in result
+
+
+FIXTURE_WITH_PROPERTY = Path(__file__).parent / "fixtures" / "_date_with_property.py"
+
+
+def test_property_in_rendered_output():
+    model = parse_model_file(FIXTURE_WITH_PROPERTY)
+    variants = generate_variants(model)
+    output = _render(model, variants)
+    assert output.count("def text") == 1 + len(variants)
+    assert output.count("@property") == 1 + len(variants)

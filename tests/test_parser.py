@@ -61,3 +61,18 @@ def test_no_template_field_is_none():
 def test_no_template_optional_fields_are_all_fields():
     info = parse_model_file(FIXTURE_NO_TEMPLATE)
     assert info.optional_fields == ["x", "y"]
+
+
+FIXTURE_WITH_PROPERTY = Path(__file__).parent / "fixtures" / "_date_with_property.py"
+
+
+def test_property_parsed():
+    info = parse_model_file(FIXTURE_WITH_PROPERTY)
+    assert len(info.properties) == 1
+    assert "def text" in info.properties[0]
+    assert "@property" in info.properties[0]
+
+
+def test_no_property_without_property_fixture():
+    info = parse_model_file(FIXTURE)
+    assert info.properties == []

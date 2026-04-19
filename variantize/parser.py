@@ -20,6 +20,7 @@ class ModelInfo:
     template_field: FieldInfo | None
     optional_fields: list[str]
     import_lines: list[str]
+    properties: list[str]
 
 
 def parse_model_file(path: Path) -> ModelInfo:
@@ -33,6 +34,7 @@ def parse_model_file(path: Path) -> ModelInfo:
     template_field = next((f for f in fields if f.name == "template"), None)
     optional_fields = _extract_optional_fields(template_field, fields)
     base_class = class_node.bases[0].id if class_node.bases else "BaseModel"
+    properties = _extract_properties(class_node, source_lines)
 
     return ModelInfo(
         class_name=class_node.name,
@@ -41,6 +43,7 @@ def parse_model_file(path: Path) -> ModelInfo:
         template_field=template_field,
         optional_fields=optional_fields,
         import_lines=import_lines,
+        properties=properties,
     )
 
 
@@ -79,3 +82,18 @@ def _extract_optional_fields(
     template_field: FieldInfo | None, fields: list[FieldInfo]
 ) -> list[str]:
     return [f.name for f in fields if f.name != "template"]
+
+
+def _extract_properties(class_node: ast.ClassDef, source_lines: list[str]) -> list[str]:
+    result = []
+    for node in class_node.body:
+        if not isinstance(node, ast.FunctionDef):
+            continue
+        if any(
+            (isinstance(d, ast.Name) and d.id == "property") or
+            (isinstance(d, ast.Attribute) and d.attr == "property")
+            for d in node.decorator_list
+        ):
+            start = node.decorator_list[0].lineno - 1
+            result.append("\n".join(source_lines[start:node.end_lineno]))
+    return result

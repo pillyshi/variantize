@@ -17,9 +17,9 @@ def _render(model: ModelInfo, variants: list[VariantModel]) -> str:
     all_class_names = [model.class_name] + [v.class_name for v in variants]
 
     parts = [import_block]
-    parts.append(_render_class(model.class_name, model.base_class, model.fields))
+    parts.append(_render_class(model.class_name, model.base_class, model.fields, model.properties))
     for v in variants:
-        parts.append(_render_class(v.class_name, v.base_class, v.fields))
+        parts.append(_render_class(v.class_name, v.base_class, v.fields, v.properties))
     parts.append(_render_union(stem, all_class_names))
 
     return "\n\n\n".join(parts) + "\n"
@@ -52,14 +52,17 @@ def _top_level_module(import_line: str) -> str:
     return ""
 
 
-def _render_class(name: str, base: str, fields: list[FieldInfo]) -> str:
+def _render_class(name: str, base: str, fields: list[FieldInfo], properties: list[str] = []) -> str:
     lines = [f"class {name}({base}):"]
     for f in fields:
         if f.default is not None:
             lines.append(f"    {f.name}: {f.annotation} = {f.default}")
         else:
             lines.append(f"    {f.name}: {f.annotation}")
-    return "\n".join(lines)
+    result = "\n".join(lines)
+    for prop in properties:
+        result += "\n\n" + prop
+    return result
 
 
 def _render_union(stem: str, all_class_names: list[str]) -> str:
