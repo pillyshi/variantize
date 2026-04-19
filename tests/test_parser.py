@@ -48,3 +48,16 @@ def test_optional_fields():
 def test_import_lines():
     info = parse_model_file(FIXTURE)
     assert any("pydantic" in line for line in info.import_lines)
+
+
+FIXTURE_NO_TEMPLATE = Path(__file__).parent / "fixtures" / "_point.py"
+
+
+def test_no_template_field_is_none():
+    info = parse_model_file(FIXTURE_NO_TEMPLATE)
+    assert info.template_field is None
+
+
+def test_no_template_optional_fields_are_all_fields():
+    info = parse_model_file(FIXTURE_NO_TEMPLATE)
+    assert info.optional_fields == ["x", "y"]

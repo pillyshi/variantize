@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import ast
-import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -79,7 +78,4 @@ def _extract_fields(class_node: ast.ClassDef) -> list[FieldInfo]:
 def _extract_optional_fields(
     template_field: FieldInfo | None, fields: list[FieldInfo]
 ) -> list[str]:
-    if template_field is None or template_field.default is None:
-        return []
-    placeholders = set(re.findall(r"\{(\w+)\}", template_field.default))
-    return [f.name for f in fields if f.name in placeholders]
+    return [f.name for f in fields if f.name != "template"]

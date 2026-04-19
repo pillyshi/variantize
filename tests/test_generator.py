@@ -66,3 +66,30 @@ def test_variant_class_name_helper():
     assert _variant_class_name("DateFull", ("year",)) == "DateWithoutYear"
     assert _variant_class_name("DateFull", ("year", "month")) == "DateWithoutYearMonth"
     assert _variant_class_name("AddressFull", ("city",)) == "AddressWithoutCity"
+
+
+FIXTURE_NO_TEMPLATE = Path(__file__).parent / "fixtures" / "_point.py"
+
+
+def test_no_template_variant_count():
+    model = parse_model_file(FIXTURE_NO_TEMPLATE)
+    variants = generate_variants(model)
+    # N=2: 2^2 - 2 = 2
+    assert len(variants) == 2
+
+
+def test_no_template_variant_class_names():
+    model = parse_model_file(FIXTURE_NO_TEMPLATE)
+    variants = generate_variants(model)
+    names = [v.class_name for v in variants]
+    assert "PointWithoutX" in names
+    assert "PointWithoutY" in names
+
+
+def test_no_template_omitted_field_becomes_literal_none():
+    model = parse_model_file(FIXTURE_NO_TEMPLATE)
+    variants = generate_variants(model)
+    without_x = next(v for v in variants if v.class_name == "PointWithoutX")
+    x_field = next(f for f in without_x.fields if f.name == "x")
+    assert x_field.annotation == "Literal[None]"
+    assert x_field.default == "None"
