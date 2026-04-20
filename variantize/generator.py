@@ -47,5 +47,9 @@ def _build_variant(model: ModelInfo, omitted: tuple[str, ...]) -> VariantModel:
 
 def _variant_class_name(base_name: str, omitted: tuple[str, ...]) -> str:
     stem = base_name.removesuffix("Full")
-    suffix = "".join(f.capitalize() for f in omitted)
+    suffix = "".join(_snake_to_pascal(f) for f in omitted)
     return f"{stem}Without{suffix}"
+
+
+def _snake_to_pascal(name: str) -> str:
+    return "".join(part.capitalize() for part in name.split("_"))

@@ -66,6 +66,8 @@ def test_variant_class_name_helper():
     assert _variant_class_name("DateFull", ("year",)) == "DateWithoutYear"
     assert _variant_class_name("DateFull", ("year", "month")) == "DateWithoutYearMonth"
     assert _variant_class_name("AddressFull", ("city",)) == "AddressWithoutCity"
+    assert _variant_class_name("AddressFull", ("zip_code",)) == "AddressWithoutZipCode"
+    assert _variant_class_name("AddressFull", ("first_name", "last_name")) == "AddressWithoutFirstNameLastName"
 
 
 FIXTURE_NO_TEMPLATE = Path(__file__).parent / "fixtures" / "_point.py"

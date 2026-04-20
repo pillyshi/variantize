@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "variantize"
-version = "0.1.2"
+version = "0.1.3"
 description = "Generate all field-omission variants of a Pydantic model"
 license = "MIT"
 packages = [{ include = "variantize" }]
